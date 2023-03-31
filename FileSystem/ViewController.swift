@@ -1,13 +1,18 @@
 import UIKit
 
-class FileSystem {
-    
-}
-
 class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.fileSystem();
+        let image = self.loadImageFromDocumentDirectory();
+        let imageView = UIImageView();
+        
+        view.addSubview(imageView);
+        imageView.image = image;
+        imageView.translatesAutoresizingMaskIntoConstraints = false;
+        imageView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true;
+        imageView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true;
+        imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true;
     }
     
     private func fileSystem() {
@@ -39,6 +44,19 @@ class ViewController: UIViewController {
         }
         
         print("Dir Path = \(dir!)")
+    }
+    
+    private func loadImageFromDocumentDirectory() -> UIImage {
+        let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
+        let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
+        let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
+        if let dirPath = paths.first{
+            print("WHAT IS DIR: \(dirPath)")
+            let imageURL = URL(fileURLWithPath: "\(dirPath)/FOLDER_NAME").appendingPathComponent("image.png")
+            let image = UIImage(contentsOfFile: imageURL.path)!;
+            return image
+        }
+        return UIImage.init(named: "imageDefaultPlaceholder")!
     }
     
     private func image() {
