@@ -1,5 +1,9 @@
 import UIKit
 
+class FileSystem {
+    
+}
+
 class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -13,20 +17,23 @@ class ViewController: UIViewController {
         
         do {
             try manager.createDirectory(atPath: dir!.path, withIntermediateDirectories: true, attributes: nil);
-            let file: URL? = dir?.appending(path: "logs.txt");
-//            let imageUrl: URL? = dir?.appending(path: "image.png");
             let image: String = "https://www.easylinedrawing.com/wp-content/uploads/2020/10/flower_drawing.png";
             let imageLocation: URL? = dir?.appending(path: "image.png");
             let url: URL? = URL(string: image);
             
-            if let data = try? Data(contentsOf: url!) {
-                try data.write(to: imageLocation!);
-            }
+            URLSession.shared.dataTask(with: url!, completionHandler: { (data, res, error) in
+                DispatchQueue.main.async {
+                    if let d = data {
+                        do {
+                            try d.write(to: imageLocation!);
+                        } catch {
+                            print("ERROR IS: \(error)")
+                        }
+                    }
+                }
+            }).resume();
             
-            print("FILE URL IS: \(file!.path)");
             print("IMAGE URL IS: \(imageLocation!.path)");
-            
-            manager.createFile(atPath: file!.path, contents: nil, attributes: [FileAttributeKey.creationDate: Date()])
         } catch let error as NSError {
             print("Unable to create directory \(error.debugDescription)")
         }
@@ -42,7 +49,6 @@ class ViewController: UIViewController {
         view.backgroundColor = .cyan;
         
         if let data = try? Data(contentsOf: url!){
-//            data.write(to: <#T##URL#>)
             imageView.image = UIImage(data: data);
         }
         
